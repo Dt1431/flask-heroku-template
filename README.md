@@ -1,45 +1,49 @@
-# Heroku Flask Template and Deployment Instructions
+# Flask Data Visualization Template with some special sause for easy Heroku Deployment
+
+A full-stack Flask data visualization template equipped with Pandas, Bootstrap (v4.3.1), D3 (v5), Leaflet (v1.5.1) and SQLAlchemy -- organized using a design pattern optimized for seamless Heroku deployment process in mind. This template contains some sample code for demonstration purposes and uses MySQL for data storage, but is compatible with most other relational databases, e.g, Postgres.
+
+## Dependencies
+- [Git](https://git-scm.com/downloads)
+- [Anaconda](https://www.anaconda.com/distribution/) or [Python 3](https://www.python.org/downloads/) + [Virtualenv](https://www.python.org/downloads/) 
+- [Heruku cli](https://devcenter.heroku.com/articles/heroku-cli#download-and-install)
 
 ## Instructions
-
-* In this activity, we will deploy the Pet Pals application to Heroku. This step consists of 3 main parts:
-
-  1. Prepare the application with additional configuration files (`Procfile` and `requirements.txt`)
-  2. Create the Heroku application
-  3. Prepare the Heroku database
-
-#### Part 1: Configuration Files
-
-* If you haven't already, send the code from the previous activity to the class.
-
-* Start by creating a new conda environment just for this app. All of our project dependencies will be installed in this environment. Note: This should only contain python 3.6 and not anaconda.
-
+#### Part 1: Development Enviroment setup
+1. Clone template repository
 ```sh
-conda create -n pet_pals_env python=3.6
+git clone https://github.com/Dt1431/flask-heroku-template.git
 ```
-
-* Make sure to activate this new environment before proceeding.
-
+2. Navigate into the new repository's root directory
 ```sh
-source activate pet_pals_env
+cd /path/to/your/repo/flask-heroku-template
 ```
-
-* Next, we install `gunicorn` with `pip install gunicorn`. Explain that gunicorn is a high performance web server that can run their Flask app in a production environment.
-
-* Because this app will use Postgres, we also install `psycopg2` with `pip install psycopg2`.
-
-* Make sure to install any other dependencies that are required by the application. This may be `Pandas`, `flask-sqlalchemy`, or any other Python package that is required to run the app. **Test the app locally to make sure that it works!**
-
-
+3. Create virtual enviroment for application
+```sh
+# For anaconda (note: you can use other versions of python 3)
+conda create -n app_env python=3.6
+# For regular old python + virtualenv
+virtualenv app_env
 ```
-pip install gunicorn
-pip install psycopg2
-pip install flask
-pip install flask-sqlalchemy
-pip install pandas
-```
+4. Activate your virtual enviroment
+```sh
+# For anaconda (MAC, PC, Linux)
+conda activate app_env
+# OR
+source activate app_env
 
-* Test the app by first initializing the database:
+# For regular old python + virtualenv
+# PC (CMD)
+app_env\Scripts\activate
+# OR
+app_env/Scripts/activate
+# MAC, Linux
+source app_env/bin/activate
+```
+5. Install python dependencies
+```sh
+pip install -r requirements.txt
+```
+6. Test the app by first initializing the database:
 
 ```sh
 python initdb.py
@@ -70,7 +74,7 @@ web: gunicorn pet_pals.app:app
 
 * Explain that `pet_pals` is the name of the folder that contains your app as a python package (i.e. the name of the folder with the `__init__.py` file in it).
 
-#### Part 2: Creating the Heroku App
+#### Part 2: Production Enviroment Setup (Heruku)
 
 * On Heroku, go to the `Deploy` section of your app's homepage, and follow the steps to deploy the app.
 
@@ -107,3 +111,24 @@ heroku run initdb.py
 ```
 
 * Your database is now initialized, and you can open the application using `heroku open` from the terminal.
+
+## Common Issues
+
+#### Windows (Git Bash) - No command 'conda conda'
+This is a known anaconda bug introduced in version 4.6.9, but has been corrected. The easiest way to fix this issue is to upgrade anaconda using the following command.
+```
+conda update --all
+```
+#### ERROR: ModuleNotFoundError: No module named 'MySQLdb'
+Install a mysql client for python. I'd recommend mysqlclient.
+```
+pip install mysqlclient
+```
+If you're having issues there are other options [other options](https://docs.sqlalchemy.org/en/13/dialects/mysql.html). Note: "Clients" are often called databse APIs or DBAPIs, don't be confused by the terminology, you're in the right place.
+
+#### ERROR: Access denied for user 'admin'@'localhost' (using password: YES)")
+You've got the wrong username or password! If you can't remember your username and password but have access to the DB via MySQL workbench you can create a new user by running the following SQL statments which create a new user and password admin/P@SSW0RD. 
+```
+CREATE USER 'admin'@'localhost' IDENTIFIED BY 'P@SSW0RD';
+GRANT ALL PRIVILEGES ON * . * TO 'admin'@'localhost';
+```
